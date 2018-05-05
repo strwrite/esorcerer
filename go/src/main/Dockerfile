@@ -13,7 +13,7 @@ RUN ( git config --global user.email 'str.write@gmail.com' \
 && echo "Building revision $(cat git.rev) with GOPATH=$GOPATH" \
 && go install \
 -ldflags \
-"-X main.Buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.Githash=`cat git.rev`" \
+"-X main.Test='test' -X main.Buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.Githash=`cat git.rev`" \
 -v ./...
 
 CMD ["app"]

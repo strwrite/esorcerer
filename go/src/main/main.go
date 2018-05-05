@@ -22,17 +22,17 @@ var (
 	Version esorcererVersion
 	plugin_loadings map[string]string = make(map[string]string)
 	plugin_roots = flag.String("plugin_roots",
-		"plugins/static",
+		"plugins/dynamic",
 		"Names of root directories where to locate the plugins to load, " +
 			"as a comma separated list. " +
-			"Note that only default plugins located in 'plugins/static' folder could access 'flags'")
+			"Note that only default plugins located in 'plugins/dynamic' folder could access 'flags'")
 )
 
 func main() {
 	Version = esorcererVersion{Githash, Buildstamp, API}
 	log.Printf("Version of esorcerer is %+v", Version)
 
-	loadPluginsFromDir("plugins/static")
+	loadPluginsFromDir("plugins/dynamic")
 	flag.Parse()
 
 	log.Printf("Load custom plugins from: %s \n", *plugin_roots)
@@ -40,7 +40,6 @@ func main() {
 	for _, pluginRoot := range pluginRoots {
 		loadPluginsFromDir(pluginRoot)
 	}
-
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
@@ -103,7 +102,7 @@ func loadPlugin(pluginLocation string, pluginName string) *plugin.Plugin {
 	log.Printf("Run plugin %s initialization", pluginName)
 	initFunc.(func())()
 
-	version, err := the_plugin.Lookup("Version")
+	version, err := the_plugin.Lookup("PluginVersion")
 	if err != nil {
 		log.Panicf("Failed to get version of %s from %s ...", pluginName, pluginLocation)
 	}
@@ -112,7 +111,9 @@ func loadPlugin(pluginLocation string, pluginName string) *plugin.Plugin {
 	return the_plugin
 
 }
-
+var conf = `
+declare: something
+`
 func tryEventLoop(the_plugin *plugin.Plugin, pluginLocation string, pluginName string) {
 	log.Printf("Look for event loop in the plugin %s from %s", pluginName, pluginLocation)
 	spawnEventLoopFunc, err := the_plugin.Lookup("Spawn_event_loop")
@@ -120,7 +121,9 @@ func tryEventLoop(the_plugin *plugin.Plugin, pluginLocation string, pluginName s
 		log.Printf("Not found Spawn_event_loop in the plugin %s from %s : %v", pluginName, pluginLocation, err)
 	} else {
 		log.Printf("Run Spawn_event_loop in the plugin %s from %s", pluginName, pluginLocation)
-		go doTheThing(spawnEventLoopFunc.(func()))
+		go doTheThing(func() {
+			spawnEventLoopFunc.(func([]byte))([]byte(conf))
+		})
 	}
 
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"os/signal"
 	"gopkg.in/Shopify/sarama.v1"
+	"gopkg.in/yaml.v2"
 )
 
 func getEnv(key, fallback string) string {
@@ -21,10 +22,10 @@ type pluginVersion struct {
 }
 
 var (
-	Buildstamp = ""
-	Githash = ""
+	build_date = ""
+	git_hash = ""
 	API = "v1"
-
+	PluginVersion pluginVersion
 	brokers = flag.String("brokers",
 		getEnv("KAFKA_PEERS", "kafka:9092"),
 		"The Kafka brokers to connect to, as a comma separated list")
@@ -32,7 +33,8 @@ var (
 )
 
 func Plugin_init() {
-	Version = pluginVersion{Githash, Buildstamp, API}
+	PluginVersion = pluginVersion{git_hash, build_date, API}
+	log.Printf("Kafka events version: %+v", PluginVersion)
 	flag.Parse()
 
 	if *brokers == "" {
@@ -45,7 +47,25 @@ func Plugin_init() {
 
 }
 
-func Spawn_event_loop() {
+type Kafka_events_loop_declaration struct {
+	A string
+	B struct {
+		  RenamedC int   `yaml:"c"`
+		  D        []int `yaml:",flow"`
+	  }
+}
+
+func Spawn_event_loop(declarationBytes []byte) {
+	log.Printf("Received declaration: %s", declarationBytes)
+
+	dec := Kafka_events_loop_declaration{}
+
+	err := yaml.Unmarshal([]byte(declarationBytes), &dec)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	log.Printf("Parsed declaration:\n%v\n\n", dec)
 
 	consumer, err := sarama.NewConsumer(brokerList, nil)
 	if err != nil {

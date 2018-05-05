@@ -5,6 +5,7 @@ FROM golang:1.8
 
 WORKDIR /go/src/kafka_events
 RUN go get gopkg.in/Shopify/sarama.v1
+RUN go get gopkg.in/yaml.v2
 
 COPY . .
 RUN ( git config --global user.email 'str.write@gmail.com' \
@@ -14,7 +15,9 @@ RUN ( git config --global user.email 'str.write@gmail.com' \
 && echo "Building revision $(cat git.rev) with GOPATH=$GOPATH" \
 && go build \
 -ldflags \
-"-X main.Buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.Githash=`cat git.rev`" \
+"-pluginpath=kafka_events_custom_path \
+ -X kafka_events_custom_path.build_date=`date -u '+%Y-%m-%d_%I:%M:%S%p'` \
+ -X kafka_events_custom_path.git_hash=`cat git.rev`" \
 -buildmode=plugin
 #
 CMD ["cp", "/go/src/kafka_events/kafka_events.so", "/go/out/"]
