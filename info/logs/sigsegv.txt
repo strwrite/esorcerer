@@ -139,3 +139,99 @@ ns/static/kafka_events/kafka_events.so
 ins/static/kafka_events/kafka_events.so
 2018/05/05 00:08:11 Load custom plugins from: plugins/static
 2018/05/05 00:08:11 Location plugins/static has been already processed
+
+
+OR
+
+
+strow@tisu-laptop MINGW64 /c/work/my/esorcerer/go/src/main (master)
+$ docker build  -t esorcerertest . && docker run --r
+m -it --name esorcerer --network kafka-net esorcerer
+test app
+Sending build context to Docker daemon 12.18 MB
+Step 1/6 : FROM golang:1.8
+ ---> d31fe3d9c824
+Step 2/6 : WORKDIR /go/src/app
+ ---> Using cache
+ ---> 0af98bc40f48
+Step 3/6 : COPY . .
+ ---> Using cache
+ ---> dd92e032a3fb
+Step 4/6 : RUN go get -d -v ./...
+ ---> Using cache
+ ---> 8d76893c8e62
+Step 5/6 : RUN ( git config --global user.email 'str.write@gmail.com' && git config --global u
+ser.name 'Timur Sultanaev' && git init && git add . && git commit -m init && git rev-parse HEA
+D > git.rev ) && echo "Building revision $(cat git.rev) with GOPATH=$GOPATH" && go install -ld
+flags "-X main.Buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.Githash=`cat git.rev`" -v .
+/...
+ ---> Using cache
+ ---> 064b853db308
+Step 6/6 : CMD app
+ ---> Using cache
+ ---> f230e0cdf89f
+Successfully built f230e0cdf89f
+SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker ho
+st. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is
+ recommended to double check and reset permissions for sensitive files and directories.
+2018/05/05 00:18:10 Version of esorcerer is {Githash:a7ae83272073f459138ebe6669add1ba2b98b7c3
+Buildstamp:2018-05-05_12:05:11AM API:v1}
+2018/05/05 00:18:10 Found directory in plugins/static: static
+2018/05/05 00:18:10 Found directory in plugins/static: kafka_events
+2018/05/05 00:18:10 Found file in plugins/static: kafka_events.so
+2018/05/05 00:18:10 Found plugin: kafka_events
+2018/05/05 00:18:10 Loading plugin kafka_events from plugins/static/kafka_events/kafka_events.
+so ...
+2018/05/05 00:18:10 Lookup initialization for kafka_events
+2018/05/05 00:18:10 Run plugin kafka_events initialization
+2018/05/05 00:18:10 Kafka brokers : kafka:9092
+2018/05/05 00:18:10 Version of kafka_events is &{Githash: Buildstamp: API:v1}
+2018/05/05 00:18:10 Look for event loop in the plugin kafka_events from plugins/static/kafka_e
+vents/kafka_events.so
+2018/05/05 00:18:10 Run Spawn_event_loop in the plugin kafka_events from plugins/static/kafka_
+events/kafka_events.so
+2018/05/05 00:18:10 Load custom plugins from: plugins/static
+2018/05/05 00:18:10 Location plugins/static has been already processed
+unexpected fault address 0x0
+fatal error: fault
+[signal SIGSEGV: segmentation violation code=0x80 addr=0x0 pc=0x537743]
+
+goroutine 22 [running]:
+runtime.throw(0x57031a, 0x5)
+        /usr/local/go/src/runtime/panic.go:596 +0x95 fp=0xc42001c778 sp=0xc42001c758
+runtime.sigpanic()
+        /usr/local/go/src/runtime/signal_unix.go:297 +0x28c fp=0xc42001c7c8 sp=0xc42001c778
+main.doTheThing(0x7fba8918b6d0)
+        /go/src/app/main.go:129 +0x23 fp=0xc42001c7d8 sp=0xc42001c7c8
+runtime.goexit()
+        /usr/local/go/src/runtime/asm_amd64.s:2197 +0x1 fp=0xc42001c7e0 sp=0xc42001c7d8
+created by main.tryEventLoop
+        /go/src/app/main.go:123 +0x447
+
+goroutine 1 [chan receive]:
+main.main()
+        /go/src/app/main.go:51 +0x315
+
+goroutine 17 [syscall, locked to thread]:
+runtime.goexit()
+        /usr/local/go/src/runtime/asm_amd64.s:2197 +0x1
+
+goroutine 20 [syscall]:
+os/signal.signal_recv(0x0)
+        /usr/local/go/src/runtime/sigqueue.go:116 +0x104
+os/signal.loop()
+        /usr/local/go/src/os/signal/signal_unix.go:22 +0x22
+created by os/signal.init.1
+        /usr/local/go/src/os/signal/signal_unix.go:28 +0x41
+
+goroutine 23 [select, locked to thread]:
+runtime.gopark(0x578540, 0x0, 0x570502, 0x6, 0x18, 0x2)
+        /usr/local/go/src/runtime/proc.go:271 +0x13a
+runtime.selectgoImpl(0xc42002cf50, 0x0, 0x18)
+        /usr/local/go/src/runtime/select.go:423 +0x1364
+runtime.selectgo(0xc42002cf50)
+        /usr/local/go/src/runtime/select.go:238 +0x1c
+runtime.ensureSigM.func1()
+        /usr/local/go/src/runtime/signal_unix.go:434 +0x2dd
+runtime.goexit()
+        /usr/local/go/src/runtime/asm_amd64.s:2197 +0x1
