@@ -76,3 +76,66 @@ os/signal.loop()
         /usr/local/go/src/os/signal/signal_unix.go:22 +0x22
 created by os/signal.init.1
         /usr/local/go/src/os/signal/signal_unix.go:28 +0x41
+
+
+
+OR IT COULD BE OK:
+
+
+
+
+
+strow@tisu-laptop MINGW64 /c/work/my/esorcerer/go/src
+/main (master)
+$ docker build  -t esorcerertest . && docker run --r
+m -it --name esorcerer --network kafka-net esorcerer
+test app
+Sending build context to Docker daemon 12.18 MB
+Step 1/6 : FROM golang:1.8
+ ---> d31fe3d9c824
+Step 2/6 : WORKDIR /go/src/app
+ ---> Using cache
+ ---> 0af98bc40f48
+Step 3/6 : COPY . .
+ ---> Using cache
+ ---> dd92e032a3fb
+Step 4/6 : RUN go get -d -v ./...
+ ---> Using cache
+ ---> 8d76893c8e62
+Step 5/6 : RUN ( git config --global user.email 'str.
+write@gmail.com' && git config --global user.name 'Ti
+mur Sultanaev' && git init && git add . && git commit
+ -m init && git rev-parse HEAD > git.rev ) && echo "B
+uilding revision $(cat git.rev) with GOPATH=$GOPATH"
+&& go install -ldflags "-X main.Buildstamp=`date -u '
++%Y-%m-%d_%I:%M:%S%p'` -X main.Githash=`cat git.rev`"
+ -v ./...
+ ---> Using cache
+ ---> 064b853db308
+Step 6/6 : CMD app
+ ---> Using cache
+ ---> f230e0cdf89f
+Successfully built f230e0cdf89f
+SECURITY WARNING: You are building a Docker image from Windows against a non-
+Windows Docker host. All files and directories added to build context will ha
+ve '-rwxr-xr-x' permissions. It is recommended to double check and reset perm
+issions for sensitive files and directories.
+2018/05/05 00:08:11 Version of esorcerer is {Githash:a7ae83272073f459138ebe66
+69add1ba2b98b7c3 Buildstamp:2018-05-05_12:05:11AM API:v1}
+2018/05/05 00:08:11 Found directory in plugins/static: static
+2018/05/05 00:08:11 Found directory in plugins/static: kafka_events
+2018/05/05 00:08:11 Found file in plugins/static: kafka_events.so
+2018/05/05 00:08:11 Found plugin: kafka_events
+2018/05/05 00:08:11 Loading plugin kafka_events from plugins/static/kafka_eve
+nts/kafka_events.so ...
+2018/05/05 00:08:11 Lookup initialization for kafka_events
+2018/05/05 00:08:11 Run plugin kafka_events initialization
+2018/05/05 00:08:11 Kafka brokers : kafka:9092
+2018/05/05 00:08:11 Version of kafka_events is &{Githash: Buildstamp: API:v1}
+
+2018/05/05 00:08:11 Look for event loop in the plugin kafka_events from plugi
+ns/static/kafka_events/kafka_events.so
+2018/05/05 00:08:11 Run Spawn_event_loop in the plugin kafka_events from plug
+ins/static/kafka_events/kafka_events.so
+2018/05/05 00:08:11 Load custom plugins from: plugins/static
+2018/05/05 00:08:11 Location plugins/static has been already processed
